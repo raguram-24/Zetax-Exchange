@@ -1,0 +1,19 @@
+# Go build output
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+coverage.*
+
+# Env file (real values)
+.env
+
+# Editor / OS
+.DS_Store
+.idea/
+
+# Claude Code personal settings (machine-specific)
+.claude/settings.local.json
+
+# Personal logs moved to ../docs/go/ (ignored in the root .gitignore)

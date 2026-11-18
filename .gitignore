@@ -1,0 +1,28 @@
+target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.log
+.env
+node_modules/
+
+# Go (zetax-marketdata)
+zetax-marketdata/bin/
+*.test
+coverage.*
+
+# Personal learning files (kept local, never public; back them up yourself)
+docs/java/DEV_LOG.md
+docs/java/LEARNING_LOG.md
+docs/java/LEARNING.md
+docs/java/INTERVIEW.md
+docs/go/DEV_LOG.md
+docs/go/LEARNING_LOG.md
+docs/go/LEARNING.md
+docs/PROGRESS_BUSINESS_LEARNING.md
+docs/GLOSSARY.md
+
+# Claude Code personal settings
+.claude/settings.local.json
+**/.claude/settings.local.json

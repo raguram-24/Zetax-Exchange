@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Spring Boot 4.1 (latest stable as of mid-2026). Bump to the newest 4.x from https://start.spring.io if a newer one exists -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.zetax</groupId>
+    <artifactId>zetax-exchange</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>ZetaX Exchange</name>
+    <description>A Kafka-backed order matching engine with price-time priority, built with Spring Boot, PostgreSQL and React.</description>
+
+    <modules>
+        <module>zetax-common</module>
+        <module>zetax-engine</module>
+        <module>zetax-gateway</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.zetax</groupId>
+                <artifactId>zetax-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
