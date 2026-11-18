@@ -25,7 +25,7 @@ Own approval, with: why the JDK / existing starters aren't enough, `groupId:arti
 ## Commits
 Separate approval. Run `java-clean-code` checklist and `mvn verify` first, show `git status`, propose:
 `<type>(<scope>): <summary>` (Conventional Commits, **no space before the colon**). Scope = the step (`j03`), the flow for design work (`bf-03`), or `setup` / `docs` for work not tied to a step. Types `feat` `fix` `refactor` `test` `docs` `chore` (e.g. `feat(j03): match limit orders by price-time priority`, `feat(setup): initialize project repos`).
-Branches: **one branch per flow**, `feature/<flow-name>` in kebab case from the flow document's title (e.g. BF-02 → `feature/place-limit-order`). All steps and the design work of that flow go on it; commits keep the step scope (`feat(j03): …`). Work not tied to a flow: ask Raguram for the branch name.
+Branches: **one branch per flow**, `feature/ZTX-<issue>/<flow-name>`: `<issue>` = the flow's GitHub issue number (autolink `ZTX-` → issue), `<flow-name>` in kebab case from the flow document's title (e.g. BF-02, issue #12 → `feature/ZTX-12/place-limit-order`). All steps and the design work of that flow go on it; commits keep the step scope (`feat(j03): …`); the PR says `Closes #<issue>`. Work not tied to a flow: ask Raguram for the branch name.
 `git status` must show **no private learning file** (`LEARNING*.md`, `DEV_LOG.md`, `INTERVIEW.md`, `PROGRESS_BUSINESS_LEARNING.md`, `GLOSSARY.md`); never `git add -f` them.
 After the commit, put message + short hash into the DEV_LOG entry.
 

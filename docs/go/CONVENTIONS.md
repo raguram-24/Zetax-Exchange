@@ -51,9 +51,9 @@ Final names are proposed in each step and need approval.
 
 ## 3. Git branches
 
-`feature/<flow-name>`: one branch per flow, kebab case from the flow document in `../flows/` (e.g. `feature/market-data`). All steps of that flow go on it; commits keep the step scope (`feat(step-01): …`). Work not tied to a flow: ask Raguram.
+`feature/ZTX-<issue>/<flow-name>`: one branch per flow; `<issue>` = the flow's GitHub issue number (autolink `ZTX-`), `<flow-name>` in kebab case from the flow document in `../flows/` (e.g. `feature/ZTX-20/market-data`). The PR says `Closes #<issue>`. All steps of that flow go on it; commits keep the step scope (`feat(step-01): …`). Work not tied to a flow: ask Raguram.
 
-- `<flow-name>` = the flow (acts like a ticket ID); the step number goes in the commit scope
+- `ZTX-<issue>` = the ticket; `<flow-name>` = readable name; the step number goes in the commit scope
 
 ## 4. Commit messages
 

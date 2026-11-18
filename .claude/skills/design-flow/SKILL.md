@@ -85,7 +85,7 @@ Shared docs (the exchange): `docs/flows/`, `docs/ER.md`, `docs/GLOSSARY.md`, `do
 ## Build and review
 - Build is not part of this skill: hand over to `start-java-step` (Java) or the Go `start-build-step` with the first step of the flow.
 - Review only on request, after code exists (`java-clean-code` checklist, `/code-review`).
-- Design work goes on the flow's branch `feature/<flow-name>` (e.g. `feature/place-limit-order`), the same branch its build steps use later; commits `docs(bf-03): …` (format and private-file check: `java-approval-gate` → "Commits", or Go `CONVENTIONS.md`).
+- Design work goes on the flow's branch `feature/ZTX-<issue>/<flow-name>` (e.g. `feature/ZTX-12/place-limit-order`; create the flow's GitHub issue first), the same branch its build steps use later; commits `docs(bf-03): …` (format and private-file check: `java-approval-gate` → "Commits", or Go `CONVENTIONS.md`).
 
 ## Flow document layout
 `Scope` · `Components` · `Sequence` · `Decisions` · `Contracts` · `Data model` · `Still open` · `Notes for later flows` · `Design progress` (checklist of phases 1–7)
