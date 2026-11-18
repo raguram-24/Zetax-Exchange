@@ -22,6 +22,17 @@ Raguram writes Java and Spring every day. He doesn't need syntax. He needs: **ho
    These go into `docs/java/INTERVIEW.md` at step close, in his words.
 8. **End with one check question** that needs reasoning, e.g. "The engine thread updates `lastOffset` and an Actuator thread reads it. Without `volatile`, what can the reader see?"
 
+## Deeper reading (Raguram's vault, read-only)
+Point to the matching note when a concept comes up; don't copy it. Base: `~/Documents/Second_Brain/wiki/topics/`.
+| Concept | Note |
+|---|---|
+| Proxies, `@Transactional`, bean lifecycle, `SmartLifecycle` | `spring-internals/SI 04 - Bean Lifecycle.md`, `SI 10 - Proxies and AOP.md`, `SI 11 - Transactional Internals.md` |
+| Producer `acks`, idempotence; consumers, `assign` vs groups; delivery semantics | `kafka/Kafka 04 - Producers Deep Dive.md`, `Kafka 05 - Consumers Deep Dive.md`, `Kafka 09 - Delivery Semantics and Transactions.md` |
+| Event design, golden/contract tests | `kafka/Kafka 10 - Schemas and Serialization.md`, `Kafka 13 - Event Driven Patterns.md` |
+| Transactions, MVCC, migrations, indexes | `postgres/PostgreSQL 06 - Transactions and MVCC.md`, `PostgreSQL 09 - Schema Design and Migrations.md`, `PostgreSQL 05 - Indexes and EXPLAIN.md` |
+| `TreeMap`, `ArrayDeque`, Big-O | `dsa/DSA 05 - Core Data Structures in Java.md`, `DSA 04 - Big-O and Reading Constraints.md` |
+| Design patterns | `design-patterns/` (table in `java-clean-code` 1b) |
+
 ## Habit → engine reality (point out when it shows up)
 | Web-app habit | In the ZetaX engine `book` / `runner` |
 |---|---|
@@ -30,6 +41,7 @@ Raguram writes Java and Spring every day. He doesn't need syntax. He needs: **ho
 | `System.currentTimeMillis()`, `UUID.randomUUID()` | Breaks replay in the engine. Time = Kafka record timestamp; ids = `partition-offset-n` (`trade_` + it for trades). Random ids only in the gateway (`order_` + ULID), which is never replayed. |
 | `@KafkaListener` + consumer group | Engine uses a plain `KafkaConsumer` with `assign()`. No rebalancing of in-memory books. |
 | `double` for amounts | `long` ticks. |
+| `%method` / `%M` in the log pattern for "free" method names | Stack walk on every line. Class from `%logger{0}`, method typed in the message (`place -> …`, `java-clean-code` 5b). |
 | Throw and let the framework return 500 | Engine thread must never die on a bad command: emit `OrderRejected` and continue (B6). |
 | Spring bean everywhere | `book` is plain Java: `new OrderBook()` in tests, no context. |
 | Allocate freely, GC will cope | Hot path: watch allocations; measure with JMH before optimising. |

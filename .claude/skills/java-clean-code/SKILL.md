@@ -13,6 +13,7 @@ Goal: code that a reviewer and SonarQube would both accept: **no new Sonar issue
 - **Reviewing code** (yours or Raguram's): go through the checklist in section 6. Report each finding as *what · where (file:line) · why · suggested fix*. Don't change code without OK.
 - **Sonar is the judge:** Raguram runs **SonarQube for IDE** (formerly SonarLint) in IntelliJ / VS Code. Treat its warnings as real. The rule keys below are the common ones; if unsure of a key, describe the problem instead of guessing a number.
 - Adding a Sonar Maven plugin, Checkstyle, SpotBugs or any library = a new dependency → ask first.
+- **Sonar check after every function** (Raguram, 2026-11-19): as soon as a method is written (by Claude or Raguram), read the IDE diagnostics for that file (`mcp__ide__getDiagnostics`, which shows SonarQube for IDE findings when the IDE is connected). Show each finding (rule key, line, why), fix it in the same piece **before** asking for approval, and re-check until clean. If the diagnostics aren't available, ask Raguram to paste the file's issues from the IDE's Problems / SonarQube panel. Never move to the next function with an open Sonar issue on the current one.
 
 ## 1. SOLID — in this codebase
 
@@ -53,6 +54,25 @@ public final class Matcher {
 ```
 Use a pattern only when a second case actually exists (YAGNI). Two order types today (limit, market) → Strategy is justified; a one-off `if` is not a reason for an interface.
 
+## 1b. Implementation patterns in ZetaX (where each one fits)
+
+Use a pattern only when the problem in that row exists (YAGNI). Deeper reading: Raguram's vault `~/Documents/Second_Brain/wiki/topics/design-patterns/` (read-only; start with `DP 02 - How to Apply Patterns.md` and `DP 19 - Pattern Selection Cheatsheet and Quiz.md`).
+
+| Pattern | Where in ZetaX | When (step) | Vault lesson |
+|---|---|---|---|
+| Command | `PlaceOrder`, `CancelOrder`… as sealed records on the `commands` topic (the journal) | J1 | `DP 14 - Command.md` |
+| Sealed types + pattern-matching `switch` | Engine dispatch over `Command`, consumers over `Event` (no `default` → compiler finds missing cases) | J1, J5 | `DP 01 - OOP and SOLID Foundations.md` |
+| Strategy | Limit vs market matching, once both exist | J11 | `DP 11 - Strategy.md` |
+| State | Instrument ACTIVE / HALTED / DELISTED rules | J13 | `DP 16 - State.md` |
+| Repository (JDBC) | Persistor writes, gateway reads (`JdbcClient`), one class per table group | J8, J9 | `DP 17 - Dependency Injection and Repository.md` |
+| Dependency injection (constructor) | Spring apps; the `book` is plain `new` | all | `DP 17 - Dependency Injection and Repository.md` |
+| Builder | Test data helpers (`buy(40).at(10100).by("alice")`), not production records | J2+ tests | `DP 05 - Builder.md` |
+| Factory method | `EventIds` per command (`partition-offset-n`), id generator behind an interface (ULID) | J3, J9 | `DP 04 - Factory Method and Abstract Factory.md` |
+| Facade | One gateway service in front of validation + Kafka send | J9 | `DP 09 - Facade.md` |
+| Proxy (know it, avoid it) | Spring `@Transactional` proxies: fine in the persistor, **banned in matching** | J8 | `DP 08 - Proxy.md`, `../spring-internals/SI 10 - Proxies and AOP.md` |
+
+Not planned (say why if it comes up): Singleton by hand (Spring beans are singletons already), Observer/event bus inside the engine (events go to Kafka), Chain of Responsibility for validation (a short ordered list of checks is simpler until it grows).
+
 ## 2. DRY, KISS, YAGNI
 
 - **DRY = one place for one piece of knowledge.** Tick conversion, topic names (`Topics`), event ids (`partition-offset-n`), validation limits live in one class each. Duplicated *knowledge* is the problem; two similar lines that mean different things are fine.
@@ -69,7 +89,7 @@ Use a pattern only when a second case actually exists (YAGNI). Two order types t
 - Constructor injection only (no `@Autowired` on fields); one constructor → no annotation needed.
 - `Optional` only as a return type, never as a field or parameter.
 - Money / prices / quantities: `long` ticks. Never `double`/`float`, never `BigDecimal` in the engine hot path.
-- Logging: SLF4J with placeholders: `log.info("Order {} rested at {}", id, priceTicks)`. No `System.out`. No logging inside the per-order matching loop at INFO.
+- Logging: SLF4J with placeholders, message starts with the method name (section 5b): `log.debug("place -> {} rests at {}", id, priceTicks)`. No `System.out`. No logging inside the per-order matching loop at INFO.
 - Exceptions: specific types (`OrderRejectedException`), never `catch (Exception e)` to hide errors. Business rejections in the engine are **events** (`OrderRejected`), not exceptions.
 
 ## 4. Common Sonar issues to avoid
@@ -99,6 +119,14 @@ Also: no magic numbers outside constants/config (except 0, 1 and test data), no 
 - **Determinism beats convenience:** no `Instant.now()`, random, or UUIDs inside the engine; time = Kafka record timestamp.
 - **Performance in the hot path:** avoid allocating streams/lambdas per order inside the matching loop if a benchmark shows it matters; elsewhere prefer readability.
 
+## 5b. Logging format (decided 2026-11-19)
+
+- One logger per class: `private static final Logger log = LoggerFactory.getLogger(OrderBook.class);`
+- Every message starts with **`<methodName> -> `**; the class name comes automatically from the logger (Logback pattern `%logger{0} : %msg`):
+  `log.debug("place -> {} rests {} @ {}", orderId, remaining, priceTicks);` → `OrderBook : place -> order_01JD… rests 40 @ 10100`
+- Never `%method` / `%M` / caller data in the pattern: it walks the stack on every line (too slow for the engine).
+- SLF4J placeholders (`{}`), no string concatenation; `debug` on the hot path; no secrets or personal data in logs.
+
 ## 6. Review checklist (before proposing code or a commit)
 
 - [ ] Each class has one responsibility; names say what it does (`PriceLevel`, not `Helper`/`Utils`/`Manager`).
@@ -108,6 +136,7 @@ Also: no magic numbers outside constants/config (except 0, 1 and test data), no 
 - [ ] Errors: specific exceptions, nothing swallowed, `InterruptedException` handled correctly.
 - [ ] Records / enums / sealed types used where they fit; fields `final`.
 - [ ] No `double` for money; no wall-clock time or randomness in the engine.
-- [ ] Logging via SLF4J with placeholders; no secrets in logs.
+- [ ] Logging via SLF4J with placeholders; message starts with `<methodName> -> ` (5b); no secrets in logs.
 - [ ] Tests cover the new behaviour (`java-unit-tests` skill) and pass.
+- [ ] SonarQube for IDE: no open issues on the changed files (checked after every function, again before the commit).
 - [ ] SonarQube for IDE shows no **new** issues on changed files; `mvn verify` passes with no new warnings.

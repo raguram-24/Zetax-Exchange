@@ -51,10 +51,9 @@ Final names are proposed in each step and need approval.
 
 ## 3. Git branches
 
-`<type>/step-NN-short-description` → `feat/step-01-event-types`, `feat/step-07-websocket-hub`, `fix/step-03-duplicate-events`
+`feature/<flow-name>`: one branch per flow, kebab case from the flow document in `../flows/` (e.g. `feature/market-data`). All steps of that flow go on it; commits keep the step scope (`feat(step-01): …`). Work not tied to a flow: ask Raguram.
 
-- `<type>` = same types as commits
-- `step-NN` = the step from `TASKS.md` (acts like a ticket ID)
+- `<flow-name>` = the flow (acts like a ticket ID); the step number goes in the commit scope
 
 ## 4. Commit messages
 
@@ -87,7 +86,8 @@ fix(step-07): drop slow websocket clients
 
 Rules:
 
+- No space before the colon (`feat(step-01): …`, not `feat(step-01) : …`). Scope `setup` / `docs` for work not tied to a step.
 - One logical change per commit.
 - Before every commit: `gofmt` clean, `go vet ./...`, `go test -race ./...` pass.
 - Commit only after Raguram approves (`CLAUDE.md`, Rule 1).
-- Never commit `.env`. Check `git status` before every commit.
+- Never commit `.env` or the private learning files (`../docs/go/DEV_LOG.md`, `LEARNING_LOG.md`, `LEARNING.md`). Check `git status` before every commit.

@@ -10,7 +10,7 @@ description: Use when Raguram says "start step N", "next step", or "what's next"
 - Check the previous step is `done`. If not, say so and ask whether to finish it first.
 - Before Step 0: check the "business reading" checklist. If it isn't done, offer a short explain-back on the ZetaX basics first.
 - Check `../docs/go/DECISIONS.md` and `../docs/go/EVENTS.md` for open questions this step must answer. Raise them **before** coding.
-- Propose setting the step status to `doing` and creating the branch (`feat/step-NN-...`) — both need approval.
+- Propose setting the step status to `doing` and creating the flow's branch if it doesn't exist yet (`feature/<flow-name>`, see `../docs/go/CONVENTIONS.md`) — both need approval.
 
 ## 2. Learn first (10–15 min)
 - Open `../docs/go/LEARNING.md` → the row for this step.

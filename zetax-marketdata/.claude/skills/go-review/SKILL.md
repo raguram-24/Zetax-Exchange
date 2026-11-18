@@ -5,7 +5,7 @@ description: Use to review Go code in the ZetaX market-data project - before pro
 
 # Go review checklist
 
-Run the tools first, then read the code. Report findings as: what, where (file:line), why it matters, suggested fix. Don't fix without approval.
+Run the tools first, then read the code. **After every function** (Claude's or Raguram's): `gofmt`, `go vet` and the IDE diagnostics for the file (`mcp__ide__getDiagnostics`: gopls + SonarQube for IDE, which also checks Go); fix before moving to the next function. Report findings as: what, where (file:line), why it matters, suggested fix. Don't fix without approval.
 
 ## Tools
 
@@ -49,3 +49,4 @@ go test -race ./...
 - [ ] No new dependency that wasn't approved.
 - [ ] Exported names have a doc comment starting with the name (`// Book holds ...`).
 - [ ] Tests are table-driven where there are several cases; test names say the expected result.
+- [ ] Logging: `log/slog` with structured fields; each type's logger made once with `slog.With("type", "Book")`; every message starts with `<MethodName> -> ` (`b.log.Debug("Apply -> trade applied", "tradeId", id)`). No `AddSource` in hot paths (it walks the stack).

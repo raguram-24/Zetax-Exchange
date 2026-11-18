@@ -90,6 +90,7 @@ If Raguram types the code himself (preferred for new ideas), review it and expla
 - Every goroutine has a clear owner and a way to stop (`context.Context`). No goroutine leaks.
 - `context.Context` is the first parameter of anything that blocks or does I/O.
 - Small interfaces, defined where they are **used**. Accept interfaces, return structs.
+- Logs: `slog` with structured fields; the type comes from a logger made with `slog.With("type", "<Type>")`, every message starts with `<MethodName> -> ` (same rule as the Java side).
 - Use the `go-review` skill before proposing a commit.
 
 ## Tech

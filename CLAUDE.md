@@ -51,6 +51,7 @@ The ZetaX-wide rules below (ticks, determinism, `eventId`, Kafka keys, never inv
 - REST answers `202 Accepted` after the Kafka ack; results go over WebSocket (D-14). User = `X-User-Id` header (D-16).
 - No `@Transactional`, `@Async` or other proxies in the matching code.
 - Ask before adding any dependency.
+- Log messages start with `<methodName> -> `; the class (Java, `%logger{0}`) or type (Go, `slog.With("type", …)`) is added automatically. Never caller-data / stack-walking log patterns.
 
 ## Working style
 - Small steps: one class / one rule at a time, with tests. Plan first (files, classes), wait for OK.
@@ -79,4 +80,4 @@ Raguram learns the **business** and **Java / Spring / concurrency** concepts whi
 The Go service has its own skills in `zetax-marketdata/.claude/skills/`.
 
 ## Done means
-`mvn verify` passes, no new warnings, no new SonarQube for IDE issues on changed files, new behaviour covered by tests (`java-unit-tests`), `java-clean-code` checklist done.
+`mvn verify` passes, no new warnings, no new SonarQube for IDE issues on changed files (checked after **every function**, not only at the end), new behaviour covered by tests (`java-unit-tests`), `java-clean-code` checklist done.

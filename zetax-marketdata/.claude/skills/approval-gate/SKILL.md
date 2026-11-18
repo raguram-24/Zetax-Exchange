@@ -25,7 +25,7 @@ Raguram's rule: **never write code without his approval.** Follow these steps ev
    - A question, "looks good but…", or silence is **not** approval. Answer and ask again.
    - "Change something" → update the proposal and go back to step 2.
 8. **After approval:** make exactly the approved change. Nothing extra (no "while I'm here" fixes).
-9. **Check it:** `gofmt -l .` (should print nothing), `go vet ./...`, `go test ./...` where tests exist. Show the output.
+9. **Check it:** `gofmt -l .` (should print nothing), `go vet ./...`, `go test ./...` where tests exist, and the IDE diagnostics (gopls + SonarQube for IDE) for each new/changed function. Show the output.
 10. **Log it:** add a `../docs/go/DEV_LOG.md` entry with the `project-logs` skill.
 11. **Commit only with a separate approval:** run the `go-review` skill, propose the commit message (format in `../docs/go/CONVENTIONS.md`), show `git status`, wait for yes.
 

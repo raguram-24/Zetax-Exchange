@@ -37,10 +37,10 @@ Use the template at the top of the file. Rules:
 <type>(step-NN): <short summary, present tense, ≤ ~60 chars>
 ```
 
-Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`.
+Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`. No space before the colon; scope `setup` / `docs` for work not tied to a step.
 
 Before proposing a commit:
 - `gofmt -l .` prints nothing, `go vet ./...` and `go test -race ./...` pass.
-- Run `git status` and show it. Make sure `.env` is not staged.
+- Run `git status` and show it. Make sure `.env` and the private learning files (`DEV_LOG.md`, `LEARNING_LOG.md`, `LEARNING.md`) are not staged.
 - Commit needs its own approval (`approval-gate`).
 - After committing, put the commit message (and short hash) into the DEV_LOG entry.
