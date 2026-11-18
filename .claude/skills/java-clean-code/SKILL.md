@@ -126,6 +126,7 @@ Also: no magic numbers outside constants/config (except 0, 1 and test data), no 
   `log.debug("place -> {} rests {} @ {}", orderId, remaining, priceTicks);` → `OrderBook : place -> order_01JD… rests 40 @ 10100`
 - Never `%method` / `%M` / caller data in the pattern: it walks the stack on every line (too slow for the engine).
 - SLF4J placeholders (`{}`), no string concatenation; `debug` on the hot path; no secrets or personal data in logs.
+- **Exception messages are plain** (Raguram, 2026-11-19): what is wrong, plus the value if useful (`"qty must be > 0, was -5"`). No `<Class> ->` prefix: the stack trace shows where, and messages may reach API responses (`400` bodies).
 
 ## 6. Review checklist (before proposing code or a commit)
 

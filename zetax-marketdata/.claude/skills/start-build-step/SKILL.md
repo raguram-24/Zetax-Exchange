@@ -38,7 +38,7 @@ description: Use when Raguram says "start step N", "next step", or "what's next"
 - New Go vs Java rows → quick-reference table in `../docs/go/LEARNING.md`.
 - `../docs/go/DEV_LOG.md` has an entry for each change.
 - Answered questions → move to Decisions in `../docs/go/DECISIONS.md` (his words, with the reason).
-- Run `go-review`, then propose the commit (approval needed).
+- Run `go-review`; if this step completes the service's part of the flow, propose the module commit (approval needed, format in `../docs/go/CONVENTIONS.md`). Otherwise no commit yet.
 - Set step status to `done` in `../docs/go/TASKS.md`.
 - Suggest saving key notes to Second Brain (Raguram decides).
 

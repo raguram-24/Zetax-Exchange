@@ -15,7 +15,7 @@ Three records. Formats are fixed — follow them exactly. Logs are append-only: 
 - **Why:** reason
 - **Files:** `path` (new / changed / deleted)
 - **Approved by Raguram:** yes — <how>
-- **Commit:** `<type>(step-NN): <summary>` or "not committed yet"
+- **Commit:** `<type>(marketdata): <summary>` (+ short hash) or "not committed yet"
 - **Notes:** surprises, follow-ups, versions (Go, dependencies)
 ```
 
@@ -34,10 +34,12 @@ Use the template at the top of the file. Rules:
 ## 3. Commit messages — format in `../docs/go/CONVENTIONS.md`
 
 ```
-<type>(step-NN): <short summary, present tense, ≤ ~60 chars>
+<type>(marketdata): <short summary, present tense, ≤ ~60 chars>
+
+Refs: ZTX-<issue>
 ```
 
-Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`. No space before the colon; scope `setup` / `docs` for work not tied to a step.
+Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`. No space before the colon; one commit per flow when the service's part is fully implemented; scope `docs` / `setup` for work not tied to a step.
 
 Before proposing a commit:
 - `gofmt -l .` prints nothing, `go vet ./...` and `go test -race ./...` pass.

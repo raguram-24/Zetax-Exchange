@@ -14,7 +14,7 @@ Files: `docs/java/TASKS.md` (plan + status, steps grouped by flow), `docs/flows/
 - Read the step's **flow document** first (`docs/flows/<flow>.md`: decisions, contracts, diagram). For flows the repo wins over the vault's planning diagrams.
 - If the step starts a flow that has **no flow document yet**, design it first with the `design-flow` skill. No code before the flow's decisions are written down.
 - Then the **Blocked by** line and the vault sections (Overview D-xx, "Business and Technical Flow" A/B/TF). If an open question blocks the step, ask it **before** teaching or coding. Never invent the answer.
-- Propose: status → `doing`. If the step is the **first of its flow**, also propose the flow's GitHub issue (if missing) and its branch from an up-to-date `main`: **one branch per flow**, `feature/ZTX-<issue>/<flow-name>`: `<issue>` = the flow's GitHub issue number (autolink `ZTX-` → issue), `<flow-name>` in kebab case from the flow document's title (e.g. BF-02, issue #12 → `feature/ZTX-12/place-limit-order`). All steps and the design work of that flow go on it; commits keep the step scope (`feat(j03): …`); the PR says `Closes #<issue>`. Work not tied to a flow: ask Raguram for the branch name. Later steps of the same flow continue on that branch. Both need approval (`java-approval-gate` → "Commits").
+- Propose: status → `doing`. If the step is the **first of its flow**, also propose the flow's GitHub issue (if missing) and its branch from an up-to-date `main`: **one branch per flow**, `feature/ZTX-<issue>/<flow-name>`: `<issue>` = the flow's GitHub issue number (autolink `ZTX-` → issue), `<flow-name>` in kebab case from the flow document's title (e.g. BF-02, issue #12 → `feature/ZTX-12/place-limit-order`). All steps and the design work of that flow go on it; commits use the module scope (`feat(common): …` + `Refs: ZTX-<issue>`); the PR says `Closes #<issue>`. Work not tied to a flow: ask Raguram for the branch name. Later steps of the same flow continue on that branch. Both need approval (`java-approval-gate` → "Commits").
 
 ## 2. Business first (5–10 min) — `teach-business-concept` skill
 - The trading idea this step implements, from the vault section in the step's row.
@@ -50,7 +50,7 @@ Files: `docs/java/TASKS.md` (plan + status, steps grouped by flow), `docs/flows/
 - `docs/java/LEARNING_LOG.md` entry from his explain-back (his words, tidied).
 - New rows in the quick-reference tables of `docs/java/LEARNING.md`; new trading terms → `docs/GLOSSARY.md`.
 - **Interview prep:** 2–4 questions from this step's Java/Spring concepts → `docs/java/INTERVIEW.md` (format in the file). Ask him to answer one out loud first; record his answer, add follow-ups and the trap.
-- `java-clean-code` checklist + `mvn verify` green, then propose the commit (separate approval; format and private-file check in `java-approval-gate` → "Commits"). Push the branch; merging into `main` (PR) is Raguram's call.
+- `java-clean-code` checklist + `mvn verify` green, then, **if this step completes the module's part of the flow**, propose the module commit (separate approval; format and private-file check in `java-approval-gate` → "Commits"). Otherwise no commit yet. Push the branch; merging into `main` (PR) is Raguram's call.
 - If the step finishes a flow: flow document status → `done` in `docs/flows/README.md`; lifecycle / `ER.md` versions match what was built.
 - Status → `done`. Suggest notes worth saving to the vault (Raguram decides; never edit the vault unasked).
 

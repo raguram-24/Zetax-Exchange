@@ -53,17 +53,21 @@ Final names are proposed in each step and need approval.
 
 `feature/ZTX-<issue>/<flow-name>`: one branch per flow; `<issue>` = the flow's GitHub issue number (autolink `ZTX-`), `<flow-name>` in kebab case from the flow document in `../flows/` (e.g. `feature/ZTX-20/market-data`). The PR says `Closes #<issue>`. All steps of that flow go on it; commits keep the step scope (`feat(step-01): …`). Work not tied to a flow: ask Raguram.
 
-- `ZTX-<issue>` = the ticket; `<flow-name>` = readable name; the step number goes in the commit scope
+- `ZTX-<issue>` = the ticket; `<flow-name>` = readable name
 
 ## 4. Commit messages
 
-Format (Conventional Commits + step number):
+Format (Conventional Commits, module scope, ticket footer). **One commit per module per flow**, made when the service's part of the flow is fully implemented (all its steps done, `go test -race ./...` green, lint clean):
 
 ```
-<type>(step-NN): <short summary in present tense, max ~60 chars>
+<type>(marketdata): <short summary in present tense, max ~60 chars>
 
 <optional body: what and why, wrapped at ~72 chars>
+
+Refs: ZTX-<issue>
 ```
+
+Step numbers never appear in commits; they stay in `TASKS.md`.
 
 | Type | Use for |
 |---|---|
@@ -77,16 +81,14 @@ Format (Conventional Commits + step number):
 Examples:
 
 ```
-chore(step-00): project setup with go mod
-feat(step-01): decode engine events from JSON
-feat(step-03): build price-level book from events
-test(step-04): cover candle minute boundaries
-fix(step-07): drop slow websocket clients
+feat(marketdata): stream order book snapshots and deltas
+
+Refs: ZTX-20
 ```
 
 Rules:
 
-- No space before the colon (`feat(step-01): …`, not `feat(step-01) : …`). Scope `setup` / `docs` for work not tied to a step.
+- No space before the colon (`feat(step-01): …`, not `feat(step-01) : …`). Scope `docs` / `setup` for work not tied to the service.
 - One logical change per commit.
 - Before every commit: `gofmt` clean, `go vet ./...`, `go test -race ./...` pass.
 - Commit only after Raguram approves (`CLAUDE.md`, Rule 1).
