@@ -25,7 +25,7 @@ J17      Benchmarks                                   → "numbers for the CV"
 |---|---|---|---|---|---|
 | J0 | Maven multi-module check | — | done | `mvn verify` green; I can explain reactor order and the BOM | — |
 | J0b | Domain ER (`docs/ER.md`), grows per flow | — | done | v0 drawn; each flow updates it | — |
-| J1 | Contracts in `zetax-common` | BF-02 | doing | Enums, `PlaceOrder`, `OrderAccepted`, `TradeExecuted` with guards; JSON + golden-file tests | — |
+| J1 | Contracts in `zetax-common` | BF-02 | done | Enums, `PlaceOrder`, `OrderAccepted`, `TradeExecuted` with guards; JSON + golden-file tests | — |
 | J2 | Book order + `PriceLevel` | BF-02 | todo | Fill/invariant tests pass (`filled + remaining = qty`) | — |
 | J3 | `OrderBook`: limit matching | BF-02 | todo | Price-time + maker-price tests pass; remainder rests; events with ids | — |
 | J4 | Concurrency basics (engine threads) | BF-02 | todo | Theory + small demos understood; engine thread model written down | — |
@@ -72,12 +72,11 @@ J17      Benchmarks                                   → "numbers for the CV"
 ### J1 — Contracts (`zetax-common`) · BF-02
 Plan and decisions: `docs/flows/BF-02-place-limit-order.md`.
 - [x] Settle open questions 2–4 first (2026-11-17)
-- [ ] Delete the skeleton enums + `Topics` + `package-info` (implementation from scratch, 2026-11-17)
-- [ ] Enums: `Side`, `OrderType` (`LIMIT`), `OrderStatus` (`RECEIVED, OPEN, PARTIALLY_FILLED, FILLED`)
-- [ ] `PlaceOrder` command record (sealed `Command`), compact-constructor guards (decision 19)
-- [ ] `OrderAccepted` (full order + `acceptedAt`), `TradeExecuted` (+ `executedAt`) records (sealed `Event`)
-- [ ] JSON type info via `jackson-annotations` (dependency → approval; check the Boot 4.1 / Jackson 3 artifact); golden-file tests
-- [ ] Topic names + partition count (rebuilt from scratch)
+- [x] Delete the skeleton enums + `Topics` + `package-info` (implementation from scratch, 2026-11-17; done 2026-11-18)
+- [x] Enums: `Side`, `OrderType` (`LIMIT`), `OrderStatus` (`RECEIVED, OPEN, PARTIALLY_FILLED, FILLED`) with DB codes (decision 23)
+- [x] `PlaceOrder` command record (sealed `EngineCommand`), compact-constructor guards (decision 19) — typed by Raguram, `PlaceOrderTest`
+- [x] `OrderAccepted` (full order + `acceptedAt`), `TradeExecuted` (+ `executedAt`) records (sealed `EngineEvent`)
+- [x] JSON type info via `jackson-annotations` (2.21, Boot 4.1 BOM; Jackson 3.1.4 for tests); golden-file tests in `golden/command/`, `golden/event/`
 
 ### J2 — Book order + `PriceLevel` · BF-02
 - [ ] Engine's mutable order (distinct name, e.g. `BookOrder`): id, user, side, price ticks, qty, filled; `fill(qty)` guards the invariant
@@ -94,6 +93,7 @@ Plan and decisions: `docs/flows/BF-02-place-limit-order.md`.
 - [ ] Write the engine's thread model (who owns what, who reads metrics) in `LEARNING_LOG`
 
 ### J5 — `EngineRunner` · BF-02
+- [ ] Topic names in `application.yml` (decision 25: `zetax.${ZETAX_ENV:local}.engine.commands-inbound` / `.events-outbound`) + `zetax.kafka.partitions=3` (replaces `zetax.engine.partitions`), guard test for 3
 - [ ] `SmartLifecycle` bean; one `KafkaConsumer` per thread with `assign()`
 - [ ] Poll loop: record → book (created on first sight of a symbol) → events; poison command → logged + skipped/rejected, continue
 - [ ] Shutdown with `wakeup()`; thread joins
@@ -111,7 +111,8 @@ Plan and decisions: `docs/flows/BF-02-place-limit-order.md`.
 
 ### J8 — `zetax-persistor` · BF-02
 - [ ] New Maven module (depends on `zetax-common` only); shared DB records in `zetax-common` (decision 21)
-- [ ] Consumer group on `trades`; batch; insert orders on `OrderAccepted` (status OPEN), trades `ON CONFLICT DO NOTHING`, update `filled_qty` + status; commit offsets after the DB commit
+- [ ] Topic name in `application.yml` (`zetax.${ZETAX_ENV:local}.engine.events-outbound`)
+- [ ] Consumer group on the events topic; batch; insert orders on `OrderAccepted` (status OPEN), trades `ON CONFLICT DO NOTHING`, update `filled_qty` + status; commit offsets after the DB commit
 - [ ] Testcontainers Postgres (+ Kafka) (dependency → approval); same event twice → one row
 - [ ] Same `TradeExecuted` twice → `filled_qty` added once (trade insert + both order updates in one transaction; updates only if the trade was new)
 - [ ] `trades` user FKs; decide composite FK to orders + `CHECK (maker_user_id <> taker_user_id)` (ER v0.2)
@@ -120,6 +121,7 @@ Plan and decisions: `docs/flows/BF-02-place-limit-order.md`.
 - [ ] `POST /api/orders` + `X-User-Id` (D-16); REST DTOs in the gateway
 - [ ] Read-only checks: user exists (401), instrument exists + tick multiple + min/max qty (400)
 - [ ] `orderId = "order_" + ULID` (library → approval)
+- [ ] Topic name in `application.yml` (`zetax.${ZETAX_ENV:local}.engine.commands-inbound`)
 - [ ] Produce `PlaceOrder` (key = symbol); `202 {orderId, RECEIVED}` after the ack; 503 when Kafka is down
 
 ### J10 — BF-02 end-to-end

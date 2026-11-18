@@ -70,9 +70,21 @@ sequenceDiagram
 | 19 | Validation layers | **Record** compact constructor: rules always true (no nulls, `qty > 0`, `priceTicks > 0`). **Gateway**: rules needing data (tick multiple, min/max qty, symbol + user exist). **Engine**: rules needing the book. A command that fails to deserialize on Kafka = poison: rejected, the engine thread never dies |
 | 21 | Where classes live | **Used by more than one app → `zetax-common`; used by one app → that app.** Common: Kafka messages, enums, DB data records (`Instrument`, `User`, `Order`, `Trade`, plain records, no Spring/JPA, own package e.g. `com.zetax.common.model`). Per app: REST DTOs (gateway), the engine's mutable book order (engine; distinct name, e.g. `BookOrder`, decided at build). DB access with JDBC (`JdbcClient`), not JPA |
 | 22 | Migrations | Separate folder **`zetax-db/`** (SQL only: `V1__…sql`), run as a one-off **Flyway Docker image** step in docker-compose before the apps start (later: a Kubernetes `Job`). Holds tables, dev seeds (instruments, users) and the two DB users + grants. Not in `zetax-common`. Flyway removed from the gateway pom; the persistor runs no migrations either |
+| 23 | Enum storage | Java code and Kafka JSON use the enum **names** (`BUY`, `"BUY"`). The DB stores `SMALLINT` codes with gaps, defined **on the enum** (`BUY(5)`, `SELL(10)`; `LIMIT(5)`; `RECEIVED(5)`, `OPEN(10)`, `PARTIALLY_FILLED(15)`, `FILLED(20)`), via `code()` / `fromCode()`; never `ordinal()`. Only the DB layer calls them. A `CHECK` constraint lists the valid codes (2026-11-19) |
+| 24 | JSON type labels | Fixed contract values written by us: `PLACE_ORDER`, `ORDER_ACCEPTED`, `TRADE_EXECUTED` (UPPER_SNAKE, full names), set with `@JsonTypeInfo` / `@JsonSubTypes` on the sealed interfaces. Never derived from Java class names, never renamed once a message exists on Kafka (2026-11-19) |
+| 25 | Kafka topic names | `<project>.<env>.<component>.<topic>-<direction>`: `<component>` = owner of the topic's contract, direction from the owner's view → `zetax.<env>.engine.commands-inbound` (EngineCommand), `zetax.<env>.engine.events-outbound` (EngineEvent; replaces the vault's `commands` / `trades`). `<env>` from `ZETAX_ENV` (default `local`); only dots between segments. Each app declares the topics it uses in its own `application.yml`; only the engine holds `zetax.kafka.partitions=3` (D-18), guarded by a test in J5; the end-to-end test (J10) catches name mismatches. Nothing Kafka-related in `zetax-common` (2026-11-19, Raguram's company convention) |
 | 20 | Engine ID prefix | `tradeId = "trade_" + partition-offset-n` (e.g. `trade_2-1532-1`), still deterministic (constant prefix). `eventId` stays `partition-offset-n` (`2-1532-1`): no prefix, no orderId (one command → events about several orders), no hash (unreadable). Reason for `trade_`: entity type visible in logs/DB, easier audit and debugging |
 
 ## Contracts (draft from the decisions)
+
+Package layout in `zetax-common` (2026-11-19, Raguram):
+```
+com.zetax.common
+├── order/          Order (DB record, J8) · enums/ Side, OrderType, OrderStatus
+├── trade/          Trade (DB record, J8)
+├── command/        EngineCommand (sealed), PlaceOrder
+├── event/          EngineEvent (sealed), OrderAccepted, TradeExecuted
+```
 
 ```java
 // zetax-common
@@ -80,18 +92,18 @@ enum Side { BUY, SELL }
 enum OrderType { LIMIT }
 enum OrderStatus { RECEIVED, OPEN, PARTIALLY_FILLED, FILLED }
 
-sealed interface Command permits PlaceOrder { String symbol(); }           // symbol = Kafka key
+sealed interface EngineCommand permits PlaceOrder { String symbol(); }     // everything on the `commands` topic; symbol = Kafka key
 record PlaceOrder(String orderId, String userId, String symbol,
-                  Side side, OrderType orderType, long priceTicks, long qty) implements Command
+                  Side side, OrderType orderType, long priceTicks, long qty) implements EngineCommand
 
-sealed interface Event permits OrderAccepted, TradeExecuted {
+sealed interface EngineEvent permits OrderAccepted, TradeExecuted {
     String eventId(); String symbol(); long sourceOffset(); }
 record OrderAccepted(String eventId, String symbol, long sourceOffset,
                      String orderId, String userId, Side side, OrderType orderType,
-                     long priceTicks, long qty, long acceptedAt) implements Event
+                     long priceTicks, long qty, long acceptedAt) implements EngineEvent
 record TradeExecuted(String eventId, String symbol, long sourceOffset, String tradeId,
                      long priceTicks, long qty, String makerOrderId, String takerOrderId,
-                     String makerUserId, String takerUserId, long executedAt) implements Event
+                     String makerUserId, String takerUserId, long executedAt) implements EngineEvent
 ```
 
 ## Still open (one at a time)

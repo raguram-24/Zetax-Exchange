@@ -1,0 +1,10 @@
+{
+  "type" : "PLACE_ORDER",
+  "orderId" : "order_1",
+  "userId" : "alice",
+  "symbol" : "ABC",
+  "side" : "BUY",
+  "orderType" : "LIMIT",
+  "priceTicks" : 10100,
+  "qty" : 70
+}

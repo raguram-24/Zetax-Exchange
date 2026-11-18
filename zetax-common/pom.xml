@@ -14,6 +14,17 @@
     <description>Shared contracts: commands, events, enums, topic names. Plain Java, no Spring.</description>
 
     <dependencies>
+        <!-- type labels on EngineCommand / EngineEvent (BF-02 decisions 11, 24); plain annotations, no Spring -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <!-- test only: JSON round-trip and golden-file tests -->
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

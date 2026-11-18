@@ -1,0 +1,14 @@
+{
+  "type" : "TRADE_EXECUTED",
+  "eventId" : "2-1532-1",
+  "symbol" : "ABC",
+  "sourceOffset" : 1532,
+  "tradeId" : "trade_2-1532-1",
+  "priceTicks" : 10000,
+  "qty" : 30,
+  "makerOrderId" : "order_bob",
+  "takerOrderId" : "order_alice",
+  "makerUserId" : "bob",
+  "takerUserId" : "alice",
+  "executedAt" : 1763000000000
+}

@@ -1,0 +1,13 @@
+{
+  "type" : "ORDER_ACCEPTED",
+  "eventId" : "2-1532-0",
+  "symbol" : "ABC",
+  "sourceOffset" : 1532,
+  "orderId" : "order_1",
+  "userId" : "alice",
+  "side" : "BUY",
+  "orderType" : "LIMIT",
+  "priceTicks" : 10100,
+  "qty" : 70,
+  "acceptedAt" : 1763000000000
+}
